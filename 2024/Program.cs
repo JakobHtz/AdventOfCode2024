@@ -1,3 +1,3 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-_2024.Day08.Puzzle.Part2();
+_2024.Day09.Puzzle.Part1();
