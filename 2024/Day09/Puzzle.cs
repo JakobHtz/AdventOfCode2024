@@ -4,6 +4,18 @@ public class Puzzle
 {
     public static void Part1()
     {
+        var map = ReadMap();
+        Console.WriteLine(map.Checksum());
+    }
+    
+    public static void Part2()
+    {
+        var map = ReadMap();
+        Console.WriteLine(map.Checksum(map.DefragmentedMapSoft));
+    }
+
+    private static DiskMap ReadMap()
+    {
         var line = File.ReadAllLines("/home/jakob/source/repos/AdventOfCode/2024/Day09/input.txt").First();
         var map = new DiskMap();
         var id = 0;
@@ -17,22 +29,27 @@ public class Puzzle
             }
             id += isEven ? 1 : 0;
         }
-        //map.FragmentedMap.Select(e => e == null ? "." : e.ToString()).ToList().ForEach(e => Console.Write(e));
-        //Console.WriteLine();
-        //map.DefragmentedMap.Select(e => e == null ? "." : e.ToString()).ToList().ForEach(e => Console.Write(e));
-        //Console.WriteLine();
-        Console.WriteLine(map.Checksum);
+        return map;
     }
 }
 
 public record DiskMap
 {
     public List<int?> FragmentedMap { get; set; } = new List<int?>();
-    public List<int?> DefragmentedMap => DeframentMap([..FragmentedMap]);
-    public List<int?> DefragmentedMapSoft => DeframentMapSoft([..FragmentedMap]);
-    public long Checksum => GetCheckSum([..DefragmentedMap]);
+    public List<int?> DefragmentedMap => DefragmentMap([..FragmentedMap]);
+    public List<int?> DefragmentedMapSoft => DefrgamentMapSoft([..FragmentedMap]);
 
-    public List<int?> DeframentMap(List<int?> map)
+    public long Checksum()
+    {
+        return GetCheckSum([..DefragmentedMap]);
+    } 
+
+    public long Checksum(List<int?> map)
+    {
+        return GetCheckSum([..map]);
+    }
+
+    public List<int?> DefragmentMap(List<int?> map)
     {
         var last = 0;
         for (int i = map.Count-1; i >= 0; i--)
@@ -53,9 +70,53 @@ public record DiskMap
         return map;
     }
     
-    public List<int?> DeframentMapSoft(List<int?> map)
+    public List<int?> DefrgamentMapSoft(List<int?> map)
     {
-        throw new NotImplementedException();
+        for (int i = map.Count - 1; i >= 0;)
+        {
+            var current = map[i];
+            var fileLength = 1;
+            for (int j = i-1; j >= 1; j--)
+            {
+                if (map[j] == current)
+                {
+                    fileLength++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            i -= fileLength;
+            if (current==null)
+                continue;
+            
+            var freeLength = 0;
+            var freeIndex = 0;
+            for (var j = 0; j < i && freeLength!=fileLength; j++)
+            {
+                if (map[j] == null)
+                {
+                    freeLength++;
+                }
+                else
+                {
+                    freeIndex = j+1;
+                    freeLength = 0;
+                }
+            }
+
+            if (freeLength != fileLength)
+            {
+                continue;
+            }
+            
+            map.RemoveRange(freeIndex, fileLength);
+            map.InsertRange(freeIndex, new int?[fileLength].ToList().Select(x => current));
+            map.RemoveRange(i+1, fileLength);
+            map.InsertRange(i+1, new int?[fileLength].ToList().Select(x => x = null));
+        }
+        return map;
     }
 
     public long GetCheckSum(List<int?> map)
