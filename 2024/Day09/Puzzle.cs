@@ -10,11 +10,6 @@ public class Puzzle
     
     public static void Part2()
     {
-        //6636608910639
-        //6636608910639
-        //6636608910639
-        //6636609260703
-        //6636608781232
         var map = ReadMap();
         Console.WriteLine(map.Checksum(map.DefragmentedMapSoft));
     }
@@ -107,17 +102,12 @@ public record DiskMap
 
             if (freeLength != fileLength)
                 continue;
-            //=> e==null?".":e.ToString()).ToList().ForEach(e=>Console.Write($"[{e.ToString()}]"));
-            //Console.WriteLine();
-            //Console.WriteLine();
             
             map.RemoveRange(freeIndex, fileLength);
             map.InsertRange(freeIndex, new int?[fileLength].ToList().Select(x => current));
             map.RemoveRange(i+1, fileLength);
             map.InsertRange(i+1, new int?[fileLength].ToList().Select(x => x = null));
         }
-        //map.Select(e=> e==null?".":e.ToString()).ToList().ForEach(e=>Console.Write($"[{e.ToString()}]"));
-        //Console.WriteLine();
         return map;
     }
 
