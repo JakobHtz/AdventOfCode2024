@@ -1,2 +1,2 @@
 ﻿
-_2024.Day10.Puzzle.Part2();
+_2024.Day11.Puzzle.Part1();
